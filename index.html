@@ -105,6 +105,22 @@
   textarea#editor{width:100%;height:420px;resize:vertical;border:2px solid var(--ink);border-radius:3px;
     background:#211E1A;color:#F4F1EA;font-family:"DM Mono",monospace;font-size:13px;line-height:1.5;padding:12px;outline:none}
   textarea#editor:focus{border-color:var(--ember)}
+  textarea#doc-input{width:100%;height:420px;resize:vertical;border:2px solid var(--ink);border-radius:3px;
+    background:#211E1A;color:#F4F1EA;font-family:"DM Mono",monospace;font-size:13px;line-height:1.5;padding:12px;outline:none}
+  textarea#doc-input:focus{border-color:var(--ember)}
+  .finding{border:2px solid var(--ink);border-radius:4px;padding:10px 12px;margin-bottom:10px;background:#fff}
+  .finding.err{border-left:6px solid #C0392B}
+  .finding.warn{border-left:6px solid var(--ember)}
+  .finding.info{border-left:6px solid #2C6E9B}
+  .finding .fh{display:flex;align-items:baseline;gap:8px;margin-bottom:3px}
+  .finding .sev{font-family:"DM Mono",monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:0.06em;padding:1px 7px;border-radius:20px;color:#fff}
+  .finding.err .sev{background:#C0392B}
+  .finding.warn .sev{background:var(--ember)}
+  .finding.info .sev{background:#2C6E9B}
+  .finding .ln{font-family:"DM Mono",monospace;font-size:12px;color:var(--muted)}
+  .finding .msg{font-size:13.5px;margin:2px 0}
+  .finding .sug{font-family:"DM Mono",monospace;font-size:12.5px;background:var(--ember-soft);padding:6px 9px;border-radius:3px;margin-top:5px;color:#7a2f0e;white-space:pre-wrap}
+  .doc-clean{border:2px solid var(--good);background:rgba(47,125,91,0.08);border-radius:4px;padding:14px;color:#1C4E38;font-size:14px}
   .bed-wrap{position:relative;background:var(--card)}
   canvas#bed{width:100%;display:block;background:#FCFAF4;border-radius:3px}
   .legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-family:"DM Mono",monospace;font-size:11.5px;color:var(--muted);padding:10px 14px 2px}
@@ -135,6 +151,9 @@
 
   .gen-genonly{display:none}
   .gen-genonly.active{display:block}
+  .valve-key{display:flex;align-items:center;gap:12px;margin-top:8px;font-family:"DM Mono",monospace;font-size:11.5px;color:var(--muted)}
+  .valve-key span{display:inline-flex;align-items:center;gap:5px}
+  .valve-key i{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--ink);display:inline-block}
 
   /* Reference */
   .ref-search{margin-bottom:16px}
@@ -179,6 +198,7 @@
     <nav class="tabs" role="tablist" aria-label="Sections">
       <button class="tab-btn" role="tab" aria-selected="true" data-page="learn">Learn</button>
       <button class="tab-btn" role="tab" aria-selected="false" data-page="play">Playground</button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-page="doctor">Doctor</button>
       <button class="tab-btn" role="tab" aria-selected="false" data-page="gen">Generators</button>
       <button class="tab-btn" role="tab" aria-selected="false" data-page="ref">Reference</button>
     </nav>
@@ -240,14 +260,54 @@
         </div>
         <div class="stat-row" id="pg-stats"></div>
         <div class="legend">
-          <span><b>&#9679;</b> drop</span>
-          <span><b style="color:var(--ember)">&#9679;</b> current position</span>
-          <span><b style="color:var(--good)">/</b> polycurve</span>
-          <span><b>&#9633;</b> external file marker</span>
+          <span>micro-valves:</span>
+          <span><b style="color:#C44E1B">&#9679;</b>1</span>
+          <span><b style="color:#2F7D5B">&#9679;</b>2</span>
+          <span><b style="color:#2C6E9B">&#9679;</b>3</span>
+          <span><b style="color:#8A4FA3">&#9679;</b>4</span>
+          <span><b style="color:var(--ember)">+</b> current position</span>
+          <span><b>&#9633;</b> external file</span>
           <span>1 grid = 1&nbsp;mm</span>
         </div>
         <div class="warns" id="pg-warns"></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DOCTOR ============ -->
+<section class="page" id="page-doctor">
+  <div class="wrap">
+    <div class="pg">
+      <div class="panel">
+        <div class="panel-head">
+          <h4>Paste a script to check</h4>
+          <div class="spacer"></div>
+          <button class="btn small ghost" id="doc-sample">Load a broken sample</button>
+        </div>
+        <div class="panel-body">
+          <textarea id="doc-input" spellcheck="false"></textarea>
+          <div class="lesson-actions" style="margin-top:10px">
+            <button class="btn ember small" id="doc-check">Check script</button>
+            <button class="btn ghost small" id="doc-fix">Apply safe fixes</button>
+          </div>
+          <div class="hint">The checker looks for the things that make the printer reject a file: unknown or misspelled commands, unbalanced or single-row polycurves, and <span class="kbd">repeat</span> paths that may not exist on this PC.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h4>Findings</h4><div class="spacer"></div><span class="mono" id="doc-count" style="font-size:12px;color:var(--muted)"></span></div>
+        <div class="panel-body">
+          <div id="doc-results"><p class="hint" style="margin:0">Paste a script and press <b>Check script</b>.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel" id="doc-fixed-panel" style="margin-top:20px;display:none">
+      <div class="panel-head"><h4>Corrected script</h4><div class="spacer"></div>
+        <button class="btn small ghost" id="doc-copy">Copy</button>
+        <button class="btn small ghost" id="doc-download">Download</button>
+        <button class="btn small ember" id="doc-toplay">Open in Playground</button>
+      </div>
+      <div class="panel-body"><pre class="code" id="doc-fixed"></pre></div>
     </div>
   </div>
 </section>
@@ -272,8 +332,24 @@
               <div class="sub"><label>Start X (mm)</label><input type="number" id="st-x" value="0" step="0.5"></div>
               <div class="sub"><label>Start Y (mm)</label><input type="number" id="st-y" value="0" step="0.5"></div>
             </div>
-            <div class="field"><label>Rotation (deg)</label><input type="number" id="st-ang" value="0" step="1"></div>
-            <p class="hint" style="margin:0">Every pattern below is placed here with a reference frame, so you can print anywhere on the bed at any angle. Rebuild after changing this.</p>
+            <div class="field row2">
+              <div class="sub"><label>Rotation (deg)</label><input type="number" id="st-ang" value="0" step="1"></div>
+              <div class="sub"><label>Micro-valve</label><select id="st-dev">
+                <option value="1">Valve 1</option>
+                <option value="2" selected>Valve 2</option>
+                <option value="3">Valve 3</option>
+                <option value="4">Valve 4</option>
+              </select></div>
+            </div>
+            <div class="field"><label>Layers (repeat block)</label><input type="number" id="st-layers" value="1" min="1" max="200"></div>
+            <div class="valve-key">
+              <span>Valve colors:</span>
+              <span><i style="background:#C44E1B"></i>1</span>
+              <span><i style="background:#2F7D5B"></i>2</span>
+              <span><i style="background:#2C6E9B"></i>3</span>
+              <span><i style="background:#8A4FA3"></i>4</span>
+            </div>
+            <p class="hint" style="margin:6px 0 0">The selected valve becomes a <span class="kbd">select N</span> line in the script. Coordinates are baked in directly (no reference-frame commands), matching your lab scripts. Rebuild after changing this.</p>
           </div>
         </div>
         <!-- LOGO -->
@@ -303,7 +379,7 @@
           <div class="panel"><div class="panel-head"><h4>Filled array</h4></div><div class="panel-body">
             <div class="field row2"><div class="sub"><label>Pitch X (dx)</label><input type="number" id="ar-dx" value="0.2" step="0.01"></div><div class="sub"><label>Count X (nx)</label><input type="number" id="ar-nx" value="10" min="1"></div></div>
             <div class="field row2"><div class="sub"><label>Pitch Y (dy)</label><input type="number" id="ar-dy" value="0.2" step="0.01"></div><div class="sub"><label>Count Y (ny)</label><input type="number" id="ar-ny" value="10" min="1"></div></div>
-            <div class="field row2"><div class="sub"><label>Angle (deg)</label><input type="number" id="ar-ang" value="0" step="1"></div><div class="sub"><label>Device</label><input type="number" id="ar-dev" value="1" min="1"></div></div>
+            <div class="field"><label>Angle (deg)</label><input type="number" id="ar-ang" value="0" step="1"></div>
             <div class="field row2"><div class="sub"><label>Fly</label><select id="ar-fly"><option value="on">on the fly</option><option value="off">on position</option></select></div><div class="sub"><label>Speed (mm/s)</label><input type="number" id="ar-speed" value="50" step="1"></div></div>
             <button class="btn ember" id="ar-build">Build script</button>
           </div></div>
@@ -327,7 +403,6 @@
             <div class="field row2"><div class="sub"><label>Pitch X</label><input type="number" id="pt-dx" value="0.5" step="0.05"></div><div class="sub"><label>Cols</label><input type="number" id="pt-nx" value="5" min="1"></div></div>
             <div class="field row2"><div class="sub"><label>Pitch Y</label><input type="number" id="pt-dy" value="0.5" step="0.05"></div><div class="sub"><label>Rows</label><input type="number" id="pt-ny" value="5" min="1"></div></div>
             <div class="field row2"><div class="sub"><label>Min drops</label><input type="number" id="pt-min" value="1" min="1"></div><div class="sub"><label>Max drops</label><input type="number" id="pt-max" value="10" min="1"></div></div>
-            <div class="field"><label>Device</label><input type="number" id="pt-dev" value="1" min="1"></div>
             <button class="btn ember" id="pt-build">Build script</button>
           </div></div>
         </div>
@@ -490,6 +565,24 @@ border 0.2 20 0.2 12 0.0
 restoreglobalreference
 border 0.2 20 0.2 12 0.0`,
 
+  labcircle:
+`Home Circular Construct Multiple layers
+; Two heads, two half-discs side by side (alveolar + bronchial).
+set fly on 15.0 0
+select 2
+beginpolycurve 1 0.8 0.0 0
+-2.0 0.0 180 0.0 0.0
+endpolycurve
+set fly on 15.0 0
+select 3
+beginpolycurve 1 0.8 0.0 0
+2.0 0.0 180 0.0 0.0
+endpolycurve`,
+
+  labrepeat:
+`Circular Construct Number of Repeats
+repeat 30 "circle_alveolar.txt"`,
+
   clean:
 `Clean jet device.
 saveparameters "C:\\jetlab4\\cleansavepars.jpr"
@@ -525,9 +618,9 @@ function tokenize(line){
   return out;
 }
 const KNOWN = new Set(['set','moveto','moveby','moveall','array','border','bitmap','begin','end',
-  'beginpolycurve','endpolycurve','execute','restoreglobalreference','wait','trigger','capturestill',
-  'rememberstrobedelay','restorestrobedelay','rememberposition','returntoposition','movetomaintenance',
-  'saveparameters','recallparameters','set']);
+  'beginpolycurve','endpolycurve','endpolycurves','execute','repeat','select','restoreglobalreference',
+  'wait','trigger','capturestill','rememberstrobedelay','restorestrobedelay','rememberposition',
+  'returntoposition','movetomaintenance','saveparameters','recallparameters']);
 const num = t => parseFloat(t);
 const rad = d => d*Math.PI/180;
 
@@ -538,6 +631,7 @@ function interpret(text){
   let globalRef={ox:0,oy:0,th:0};
   let mode='normal';                    // normal | points | poly
   let poly=null;
+  let curDev=1;                         // current print head from 'select'
 
   const toWorld=(x,y)=>{
     const c=Math.cos(ref.th), s=Math.sin(ref.th);
@@ -562,16 +656,18 @@ function interpret(text){
     /* ---- point list ---- */
     if(mode==='points'){
       if(cmd==='end'){ mode='normal'; continue; }
-      const x=num(tk[0]), y=num(tk[1]); const drops=tk[3]!==undefined?num(tk[3]):1;
+      const x=num(tk[0]), y=num(tk[1]); const dev=tk[2]!==undefined?Math.round(num(tk[2])):curDev;
+      const drops=tk[3]!==undefined?num(tk[3]):1;
       if(!isNaN(x)&&!isNaN(y)){
         const w=toWorld(x,y);
-        shapes.push({t:'dot',x:w.x,y:w.y,r:0.05+0.045*Math.sqrt(Math.max(1,drops)),drops:drops});
+        shapes.push({t:'dot',x:w.x,y:w.y,r:0.05+0.045*Math.sqrt(Math.max(1,drops)),drops:drops,dev:dev});
       }
       continue;
     }
     /* ---- polycurve ---- */
     if(mode==='poly'){
-      if(cmd==='endpolycurve'){
+      if(cmd==='endpolycurve'||cmd==='endpolycurves'){
+        if(cmd==='endpolycurves') warns.push(`Line ${li+1}: "endpolycurves" is likely a typo; the printer expects "endpolycurve".`);
         buildPoly(poly,shapes); mode='normal'; poly=null; continue;
       }
       const vals=tk.map(num).filter(v=>!isNaN(v));
@@ -619,7 +715,7 @@ function interpret(text){
         const place=(ix,iy)=>{
           const lp=rot(ix*dx,iy*dy,ang);
           const w=toWorld(pen.x+lp.x,pen.y+lp.y);
-          shapes.push({t:'dot',x:w.x,y:w.y,r:r});
+          shapes.push({t:'dot',x:w.x,y:w.y,r:r,dev:curDev});
         };
         if(cmd==='array'){ for(let iy=0;iy<ny;iy++) for(let ix=0;ix<nx;ix++) place(ix,iy); }
         else { // border = perimeter only
@@ -634,6 +730,15 @@ function interpret(text){
         const w=toWorld(pen.x,pen.y);
         shapes.push({t:'ext',x:w.x,y:w.y,w:dx*8,h:dy*8,label:'bitmap: '+fileName(path)});
         warns.push('Bitmap uses an external .bmp; preview shows a placeholder box.');
+        break;
+      }
+      case 'select':{ curDev=Math.round(num(tk[1]))||1; break; }
+      case 'repeat':{
+        const n=Math.round(num(tk[1]))||1;
+        const path=(tk[2]||'').replace(/"/g,'');
+        const w=toWorld(pen.x,pen.y);
+        shapes.push({t:'ext',x:w.x,y:w.y,w:8,h:5,label:`repeat ${n}\u00d7: ${fileName(path)}`});
+        warns.push(`repeat runs "${fileName(path)}" ${n}\u00d7; external file, not previewed here.`);
         break;
       }
       case 'begin':{ mode='points'; break; }
@@ -653,7 +758,7 @@ function interpret(text){
       case 'wait': case 'trigger': case 'capturestill':
       case 'rememberstrobedelay': case 'restorestrobedelay':
       case 'rememberposition': case 'returntoposition': case 'movetomaintenance':
-      case 'saveparameters': case 'recallparameters': case 'end': case 'endpolycurve':
+      case 'saveparameters': case 'recallparameters': case 'end': case 'endpolycurve': case 'endpolycurves':
         break;
       default:
         warns.push(`Line ${li+1}: unrecognised command "${tk[0]}".`);
@@ -696,7 +801,7 @@ function interpret(text){
       const rx=pt.x*ca-pt.y*sa, ry=pt.x*sa+pt.y*ca;
       return {x:ref.ox+rx*cf-ry*sf, y:ref.oy+rx*sf+ry*cf};
     });
-    shapes.push({t:'poly',pts:wpts,fill:p.type===1,step:p.step});
+    shapes.push({t:'poly',pts:wpts,fill:p.type===1,step:p.step,dev:curDev});
   }
 }
 function fileName(p){ const m=String(p).split(/[\\/]/); return m[m.length-1]||p; }
@@ -753,20 +858,20 @@ function render(canvas, res, fit){
   // polycurves
   for(const s of shapes){
     if(s.t!=='poly') continue;
+    const col=devColor(s.dev);
     const path=new Path2D();
     s.pts.forEach((p,i)=>{ i?path.lineTo(X(p.x),Y(p.y)):path.moveTo(X(p.x),Y(p.y)); });
     if(s.fill){
       path.closePath();
-      ctx.save(); ctx.fillStyle='rgba(217,84,30,0.10)'; ctx.fill(path);
+      ctx.save(); ctx.fillStyle=col.fill; ctx.fill(path);
       ctx.clip(path);
-      // raster hatch lines to evoke jetted fill
-      ctx.strokeStyle='rgba(217,84,30,0.45)'; ctx.lineWidth=1;
+      ctx.strokeStyle=col.hatch; ctx.lineWidth=1;
       const stepPx=Math.max(3,s.step*scale);
       for(let yy=0; yy<h; yy+=stepPx){ ctx.beginPath();ctx.moveTo(0,yy);ctx.lineTo(w,yy);ctx.stroke(); }
       ctx.restore();
-      ctx.strokeStyle='#B8430F'; ctx.lineWidth=1.6; ctx.stroke(path);
+      ctx.strokeStyle=col.line; ctx.lineWidth=1.6; ctx.stroke(path);
     } else {
-      ctx.strokeStyle='#2F7D5B'; ctx.lineWidth=1.8; ctx.stroke(path);
+      ctx.strokeStyle=col.line; ctx.lineWidth=1.8; ctx.stroke(path);
     }
   }
   // external markers
@@ -781,9 +886,10 @@ function render(canvas, res, fit){
   let dotCount=0;
   for(const s of shapes){
     if(s.t!=='dot') continue; dotCount++;
+    const col=devColor(s.dev);
     const px=X(s.x), py=Y(s.y); const rp=Math.max(1.3,s.r*scale);
     const g=ctx.createRadialGradient(px-rp*0.3,py-rp*0.3,rp*0.15,px,py,rp);
-    g.addColorStop(0,'#3a3630'); g.addColorStop(1,'#141210');
+    g.addColorStop(0,col.dropHi); g.addColorStop(1,col.dropLo);
     ctx.fillStyle=g; ctx.beginPath(); ctx.arc(px,py,rp,0,7); ctx.fill();
   }
   // pen position
@@ -795,6 +901,14 @@ function render(canvas, res, fit){
   }
   return {dotCount, bb, scale};
 }
+// Per-device colour so multi-head scripts (select 2/3/4...) read distinctly.
+const DEV_PALETTE={
+  1:{line:'#C44E1B',fill:'rgba(196,78,27,0.12)',hatch:'rgba(196,78,27,0.45)',dropHi:'#E2865A',dropLo:'#8A3410'},
+  2:{line:'#2F7D5B',fill:'rgba(47,125,91,0.12)',hatch:'rgba(47,125,91,0.45)',dropHi:'#5BAE86',dropLo:'#1C4E38'},
+  3:{line:'#2C6E9B',fill:'rgba(44,110,155,0.12)',hatch:'rgba(44,110,155,0.45)',dropHi:'#5C9CC6',dropLo:'#1A4460'},
+  4:{line:'#8A4FA3',fill:'rgba(138,79,163,0.12)',hatch:'rgba(138,79,163,0.45)',dropHi:'#B27FC6',dropLo:'#563066'}
+};
+function devColor(d){ return DEV_PALETTE[d]||DEV_PALETTE[1]; }
 function getCss(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
 
 /* ============================================================
@@ -881,11 +995,13 @@ const LESSONS=[
   syntax:`beginpolycurve type step angle margin\n  x0 y0                 ; start point\n  x1 y1 arc xc yc       ; arc segment\nendpolycurve`,
   example:'arches'},
 
- {n:8,title:'Reference frames and reuse',
-  body:`<p>The reference system lets you write a pattern once at the origin, then stamp it anywhere. <span class="kbd">set reference current current *</span> moves the origin to the current position keeping the angle. <span class="kbd">set reference * * * dx dy dth</span> shifts and rotates the frame. <span class="kbd">restoreglobalreference</span> returns to the true origin. <span class="kbd">execute</span> pulls in another script file so you can compose big jobs from small pieces.</p>`,
-  params:[['set reference current current *','Origin to current point, angle unchanged.'],['set reference * * * dx dy dth','Shift by (dx,dy) and rotate dth in the current frame.'],['restoreglobalreference','Back to the global (0,0,0) frame.'],['execute "file"','Run another script inline.']],
-  syntax:`set reference current current *\nexecute "C:\\jetlab4\\Scripts\\Element.txt"\nrestoreglobalreference`,
-  example:'reference'},
+ {n:8,title:'Devices, layers, and reuse',
+  body:`<p>Real multi-material prints switch micro-valves with <span class="kbd">select N</span>: everything after it comes from that valve until the next <span class="kbd">select</span>. The machine has four micro-valves (1 to 4), so each material gets its own valve. To build up a construct, you stack layers, either by repeating the print block in one file or by calling <span class="kbd">repeat N "file"</span> on a sub-script.</p>
+  <div class="note-box">Your lab scripts use exactly this pattern: a <span class="kbd">select</span> per material and a separate <span class="kbd">repeat</span> file for the layer count. The Generators tab writes this same dialect, with a Micro-valve and Layers control.</div>
+  <p class="mut">The vendor examples also offer reference frames (<span class="kbd">set reference</span>, <span class="kbd">execute</span>, <span class="kbd">restoreglobalreference</span>) to stamp a pattern at different places; useful, but not required for the circular constructs above.</p>`,
+  params:[['select N','Use micro-valve N (1-4) for the following commands.'],['repeat N "file"','Run a script file N times, e.g. N layers.'],['set reference current current *','Origin to current point, keep angle.'],['execute "file"','Run another script inline (single pass).'],['restoreglobalreference','Return to the global origin.']],
+  syntax:`select 2\nbeginpolycurve 1 0.8 0.0 0\n  -2.0 0.0 180 0.0 0.0\nendpolycurve\n; ...then in a wrapper file:\nrepeat 30 "circle.txt"`,
+  example:'labcircle'},
 
  {n:9,title:'Maintenance and imaging',
   body:`<p>Housekeeping commands keep the jet healthy and capture droplet images. A cleaning routine saves the parameters, jets continuously to clear the nozzle, then restores everything. Drop-formation studies sweep the strobe delay while capturing stills to film a droplet as it forms.</p>`,
@@ -925,6 +1041,7 @@ const REF=[
  ['set fly on speed [n gap]','Printing','Print on the fly at speed; optional n bursts gap mm apart.'],
  ['array dx nx dy ny ang [dev]','Printing','Solid grid of drops from the current point.'],
  ['border dx nx dy ny ang','Printing','Outline of a grid from the current point.'],
+ ['select N','Printing','Choose micro-valve N (1-4) for the commands that follow.'],
  ['begin ... end','Printing','Point list; each row: x y device drops.'],
  ['bitmap dx dy ang top bidir "f"','Printing','Print a monochrome .bmp; black pixels become drops.'],
  ['beginpolycurve type step ang mrg','Shapes','Start a curve; type 0 outline / 1 filled.'],
@@ -935,6 +1052,7 @@ const REF=[
  ['set reference * * * dx dy dth','Frames','Shift and rotate the reference frame.'],
  ['restoreglobalreference','Frames','Return to the global origin.'],
  ['execute "file"','Frames','Run another script file inline.'],
+ ['repeat N "file"','Frames','Run a script file N times, e.g. to stack N layers.'],
  ['trigger cont on / off','Maintenance','Start / stop continuous jetting.'],
  ['wait s','Maintenance','Pause for s seconds.'],
  ['set frequency hz dev','Maintenance','Set jetting frequency for a device.'],
@@ -982,80 +1100,100 @@ document.querySelectorAll('.gen-tab').forEach(t=>t.onclick=()=>{
   document.querySelectorAll('[data-genpanel]').forEach(p=>p.classList.toggle('active',p.dataset.genpanel===t.dataset.gen));
 });
 
-// Wrap a pattern (authored from the origin) so it prints at the chosen start
-// position and angle, using a reference frame. Restores the global frame after.
-function startWrap(desc, fly, body){
+// Read the shared start position / device / layers controls.
+function getStart(){
   const g=id=>document.getElementById(id);
-  const x=(+g('st-x').value)||0, y=(+g('st-y').value)||0, a=(+g('st-ang').value)||0;
+  return {
+    x:(+g('st-x').value)||0, y:(+g('st-y').value)||0,
+    ang:(+g('st-ang').value)||0,
+    dev:Math.max(1,Math.round(+g('st-dev').value)||1),
+    layers:Math.max(1,Math.round(+g('st-layers').value)||1)
+  };
+}
+const f3=n=>(Math.round(n*1000)/1000).toFixed(3);
+// Bake a pattern-space point into machine coordinates: rotate about the start
+// by the start angle, then translate to the start position. No reference frames.
+function bake(x,y){
+  const st=getStart(), t=st.ang*Math.PI/180, c=Math.cos(t), s=Math.sin(t);
+  return [x*c-y*s+st.x, x*s+y*c+st.y];
+}
+// Assemble a full script: description, then the fly+select+body block repeated per layer.
+function assemble(desc, fly, body){
+  const st=getStart();
+  const block=(fly?fly+'\n':'')+`select ${st.dev}\n`+body.replace(/\s+$/,'');
   let s=desc+'\n';
-  if(fly) s+=fly+'\n';
-  s+=`moveto ${x.toFixed(3)} ${y.toFixed(3)}\n`;
-  s+=`set reference current current *\n`;
-  if(a!==0) s+=`set reference * * * 0.0 0.0 ${a.toFixed(1)}\n`;
-  s+=body.replace(/\s+$/,'')+'\n';
-  s+=`restoreglobalreference`;
+  for(let i=0;i<st.layers;i++){
+    if(st.layers>1) s+=`; --- layer ${i+1} of ${st.layers} ---\n`;
+    s+=block+(i<st.layers-1?'\n\n':'');
+  }
   return s;
 }
 
 // ARRAY
 document.getElementById('ar-build').onclick=()=>{
   const g=id=>document.getElementById(id);
+  const st=getStart();
   const fly=g('ar-fly').value==='on'?`set fly on ${(+g('ar-speed').value).toFixed(1)} 0`:'set fly off';
-  const body=`moveto 0.000 0.000
-array ${(+g('ar-dx').value)} ${Math.round(+g('ar-nx').value)} ${(+g('ar-dy').value)} ${Math.round(+g('ar-ny').value)} ${(+g('ar-ang').value).toFixed(1)} ${Math.round(+g('ar-dev').value)}`;
-  setGen(startWrap('Filled array generated in Droplet Printer Studio.',fly,body));
+  const ang=((+g('ar-ang').value)||0)+st.ang;
+  const body=`moveto ${f3(st.x)} ${f3(st.y)}
+array ${(+g('ar-dx').value)} ${Math.round(+g('ar-nx').value)} ${(+g('ar-dy').value)} ${Math.round(+g('ar-ny').value)} ${ang.toFixed(1)} ${st.dev}`;
+  setGen(assemble('Filled array generated in Droplet Printer Studio.',fly,body));
 };
 // BORDER
 document.getElementById('bd-build').onclick=()=>{
   const g=id=>document.getElementById(id);
+  const st=getStart();
   const fly=g('bd-fly').value==='on'?`set fly on ${(+g('bd-speed').value).toFixed(1)} 0`:'set fly off';
-  const dx=+g('bd-dx').value, dy=+g('bd-dy').value, nx=Math.round(+g('bd-nx').value), ny=Math.round(+g('bd-ny').value), ang=(+g('bd-ang').value).toFixed(1);
-  let body=`moveto 0.000 0.000
+  const dx=+g('bd-dx').value, dy=+g('bd-dy').value, nx=Math.round(+g('bd-nx').value), ny=Math.round(+g('bd-ny').value);
+  const ang=(((+g('bd-ang').value)||0)+st.ang).toFixed(1);
+  let body=`moveto ${f3(st.x)} ${f3(st.y)}
 border ${dx} ${nx} ${dy} ${ny} ${ang}`;
   if(g('bd-double').value==='yes' && nx>2 && ny>2){
     body+=`\nmoveby ${dx.toFixed(3)} ${dy.toFixed(3)}\nborder ${dx} ${nx-2} ${dy} ${ny-2} ${ang}`;
   }
-  setGen(startWrap('Rectangle border generated in Droplet Printer Studio.',fly,body));
+  setGen(assemble('Rectangle border generated in Droplet Printer Studio.',fly,body));
 };
 // POINTS
 document.getElementById('pt-build').onclick=()=>{
   const g=id=>document.getElementById(id);
+  const st=getStart();
   const dx=+g('pt-dx').value, dy=+g('pt-dy').value;
   const nx=Math.round(+g('pt-nx').value), ny=Math.round(+g('pt-ny').value);
-  const dmin=Math.round(+g('pt-min').value), dmax=Math.round(+g('pt-max').value), dev=Math.round(+g('pt-dev').value);
+  const dmin=Math.round(+g('pt-min').value), dmax=Math.round(+g('pt-max').value);
   const total=nx*ny; let rows='';
   for(let iy=0;iy<ny;iy++){
     const drops=ny>1?Math.round(dmin+(dmax-dmin)*iy/(ny-1)):dmin;
     for(let ix=0;ix<nx;ix++){
-      rows+=`${(ix*dx).toFixed(3)} ${(iy*dy).toFixed(3)} ${dev} ${drops}\n`;
+      const [X,Y]=bake(ix*dx,iy*dy);
+      rows+=`${f3(X)} ${f3(Y)} ${st.dev} ${drops}\n`;
     }
   }
   const body=`; x y device drops  (${total} points)\nbegin\n${rows}end`;
-  setGen(startWrap('Dose-gradient point grid generated in Droplet Printer Studio.','',body));
+  setGen(assemble('Dose-gradient point grid generated in Droplet Printer Studio.','',body));
 };
 // CIRCLE / ARCH
 document.getElementById('cr-build').onclick=()=>{
   const g=id=>document.getElementById(id);
   const shape=g('cr-shape').value, cx=+g('cr-cx').value, cy=+g('cr-cy').value, r=+g('cr-r').value, hgt=+g('cr-h').value;
-  const fill=g('cr-fill').value, step=+g('cr-step').value, fly=`set fly on ${(+g('cr-speed').value).toFixed(1)}`;
+  const fill=g('cr-fill').value, step=+g('cr-step').value, fly=`set fly on ${(+g('cr-speed').value).toFixed(1)} 0`;
   let desc, body;
   if(shape==='circle'){
+    const [p1x,p1y]=bake(cx-r,cy), [p2x,p2y]=bake(cx+r,cy), [ccx,ccy]=bake(cx,cy);
     desc='Circle generated in Droplet Printer Studio.';
     body=`beginpolycurve ${fill} ${step} 0.0 0
-${(cx+r).toFixed(3)} ${cy.toFixed(3)}
-${(cx-r).toFixed(3)} ${cy.toFixed(3)} 180 ${cx.toFixed(3)} ${cy.toFixed(3)}
-${(cx+r).toFixed(3)} ${cy.toFixed(3)} 180 ${cx.toFixed(3)} ${cy.toFixed(3)}
+${f3(p1x)} ${f3(p1y)} 180 ${f3(ccx)} ${f3(ccy)}
+${f3(p2x)} ${f3(p2y)} 180 ${f3(ccx)} ${f3(ccy)}
 endpolycurve`;
   } else {
-    const x0=cx+r, x1=cx-r, yb=cy, yt=cy+hgt;
+    const [a0x,a0y]=bake(cx+r,cy), [a1x,a1y]=bake(cx+r,cy+hgt), [topx,topy]=bake(cx,cy+hgt), [a2x,a2y]=bake(cx-r,cy);
     desc='Arch generated in Droplet Printer Studio.';
     body=`beginpolycurve ${fill} ${step} 0.0 0.05 0 0
-${x0.toFixed(3)} ${yb.toFixed(3)}
-${x0.toFixed(3)} ${yt.toFixed(3)} 180 ${cx.toFixed(3)} ${yt.toFixed(3)}
-${x1.toFixed(3)} ${yb.toFixed(3)}
+${f3(a0x)} ${f3(a0y)}
+${f3(a1x)} ${f3(a1y)} 180 ${f3(topx)} ${f3(topy)}
+${f3(a2x)} ${f3(a2y)}
 endpolycurve`;
   }
-  setGen(startWrap(desc,fly,body));
+  setGen(assemble(desc,fly,body));
 };
 
 // LOGO / IMAGE
@@ -1105,23 +1243,24 @@ document.getElementById('lg-build').onclick=()=>{
   }
   const speed=(+g('lg-speed').value).toFixed(1);
   const fly=`set fly on ${speed} 0`;
+  const st=getStart();
   if(g('lg-mode').value==='bitmap'){
-    const body=`bitmap ${pitch} ${pitch} 0.0   1   1   "${g('lg-bmp').value}"
+    const body=`moveto ${f3(st.x)} ${f3(st.y)}
+bitmap ${pitch} ${pitch} ${st.ang.toFixed(1)}   1   1   "${g('lg-bmp').value}"
 ; ${on.length} ink pixels at ${cols}\u00d7${rows}, pitch ${pitch} mm  ->  ${(cols*pitch).toFixed(2)}\u00d7${(rows*pitch).toFixed(2)} mm`;
-    setGen(startWrap('Logo print script generated in Droplet Printer Studio.',fly,body));
+    setGen(assemble('Logo print script generated in Droplet Printer Studio.',fly,body));
     return;
   }
-  // point list: flip Y so image is upright on the bed
+  // point list: flip Y so image is upright on the bed, bake into machine coords
   let rows_txt='';
   for(const [px,py] of on){
-    const X=(px*pitch).toFixed(3);
-    const Y=((rows-1-py)*pitch).toFixed(3);
-    rows_txt+=`${X} ${Y} 1 1\n`;
+    const [X,Y]=bake(px*pitch,(rows-1-py)*pitch);
+    rows_txt+=`${f3(X)} ${f3(Y)} ${st.dev} 1\n`;
   }
   const size=`${(cols*pitch).toFixed(2)}\u00d7${(rows*pitch).toFixed(2)} mm`;
   const body=`; ${on.length} drops, ${cols}\u00d7${rows} grid, pitch ${pitch} mm, size ${size}\nbegin\n${rows_txt}end`;
   if(on.length>6000) toast(`${on.length} points: consider a coarser resolution`);
-  setGen(startWrap('Logo as point list, generated in Droplet Printer Studio.',fly,body));
+  setGen(assemble('Logo as point list, generated in Droplet Printer Studio.',fly,body));
 };
 
 /* ============================================================
@@ -1142,6 +1281,164 @@ function copy(txt){navigator.clipboard&&navigator.clipboard.writeText(txt).then(
 function download(name,txt){const b=new Blob([txt],{type:'text/plain'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);toast('Downloaded '+name);}
 let toastT;
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1600);}
+
+/* ============================================================
+   SCRIPT DOCTOR  ->  find what makes the printer reject a file
+   ============================================================ */
+const CANON_CMDS=['set','moveto','moveby','moveall','array','border','bitmap','begin','end',
+  'beginpolycurve','endpolycurve','execute','repeat','select','restoreglobalreference','wait',
+  'trigger','capturestill','rememberstrobedelay','restorestrobedelay','rememberposition',
+  'returntoposition','movetomaintenance','saveparameters','recallparameters'];
+
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  const dp=new Array(n+1); for(let j=0;j<=n;j++) dp[j]=j;
+  for(let i=1;i<=m;i++){
+    let prev=dp[0]; dp[0]=i;
+    for(let j=1;j<=n;j++){
+      const tmp=dp[j];
+      dp[j]=Math.min(dp[j]+1, dp[j-1]+1, prev+(a[i-1]===b[j-1]?0:1));
+      prev=tmp;
+    }
+  }
+  return dp[n];
+}
+function nearestCmd(w){
+  let best=null,bd=99;
+  for(const c of CANON_CMDS){ const d=levenshtein(w,c); if(d<bd){bd=d;best=c;} }
+  return {cmd:best,dist:bd};
+}
+
+function lintScript(text){
+  const lines=text.split(/\r?\n/);
+  const issues=[]; const fixes=[];
+  let firstContent=-1, inPoly=false, inPoints=false;
+  let polyStart=0, polyRows=0, lastRowNums=0;
+
+  function closePoly(){
+    if(polyRows===1 && lastRowNums>=5){
+      issues.push({line:polyStart+1,sev:'info',
+        msg:'Single-row polycurve (one arc row). On some Jetlab builds a one-row arc does not form a closed path and prints nothing. If this shape is not appearing, give it an explicit start point, then the arc as a second row.',
+        sug:'beginpolycurve 1 <step> 0.0 0\n  <startX> <startY>\n  <endX> <endY> <arc> <cx> <cy>\nendpolycurve'});
+    }
+    inPoly=false;
+  }
+
+  for(let i=0;i<lines.length;i++){
+    const raw=lines[i], t=raw.trim();
+    if(t===''||t[0]===';') continue;
+    const tk=tokenize(raw);
+    if(tk.length===0) continue;
+    const first=tk[0].toLowerCase();
+    const isNum=!isNaN(parseFloat(tk[0]));
+
+    if(firstContent===-1){
+      firstContent=i;
+      if(!CANON_CMDS.includes(first) && isNaN(parseFloat(first))) continue; // description/title line
+    }
+    if(inPoints){ if(first==='end') inPoints=false; continue; }
+
+    if(inPoly){
+      if(isNum){ polyRows++; lastRowNums=tk.map(x=>parseFloat(x)).filter(x=>!isNaN(x)).length; continue; }
+      if(first==='endpolycurve'){ closePoly(); continue; }
+      const nc=nearestCmd(first);
+      if(nc.cmd==='endpolycurve' && nc.dist<=3){
+        issues.push({line:i+1,sev:'err',msg:`"${tk[0]}" is not a valid command. A polycurve must be closed with exactly "endpolycurve".`,sug:`Change "${tk[0]}" to "endpolycurve"`});
+        fixes.push({i,from:tk[0],to:'endpolycurve'}); closePoly(); continue;
+      }
+      issues.push({line:polyStart+1,sev:'err',msg:'This polycurve is never closed with "endpolycurve" before the next command.'});
+      inPoly=false; // fall through and process this line normally
+    }
+
+    if(first==='beginpolycurve'){ inPoly=true; polyStart=i; polyRows=0; lastRowNums=0; continue; }
+    if(first==='begin'){ inPoints=true; continue; }
+    if(first==='repeat'){
+      const path=(tk[2]||tk[1]||'').replace(/"/g,'');
+      const hasPath=/["\\/]/.test(tk.slice(1).join(' '));
+      if(!hasPath) issues.push({line:i+1,sev:'err',msg:'repeat has no target file in quotes.'});
+      else issues.push({line:i+1,sev:'warn',
+        msg:`repeat uses an absolute path. If "${fileName(path)}" is not exactly at that location on THIS computer, the repeat finds nothing and prints nothing.`,
+        sug:'Confirm the file exists at that exact path, or update the path to where the file lives now.'});
+      continue;
+    }
+    if(CANON_CMDS.includes(first)) continue;
+    if(isNum){ issues.push({line:i+1,sev:'warn',msg:`Numbers outside a polycurve or point list: "${t}". These would be ignored.`}); continue; }
+
+    const nc=nearestCmd(first);
+    if(nc.dist<=2){
+      issues.push({line:i+1,sev:'err',msg:`"${tk[0]}" is not a recognized command.`,sug:`Did you mean "${nc.cmd}"?`});
+      if(nc.dist<=1) fixes.push({i,from:tk[0],to:nc.cmd});
+    } else {
+      issues.push({line:i+1,sev:'err',msg:`"${tk[0]}" is not a recognized command.`});
+    }
+  }
+  if(inPoly) issues.push({line:polyStart+1,sev:'err',msg:'This polycurve is never closed with "endpolycurve".'});
+
+  let fixed=null;
+  if(fixes.length){
+    const out=lines.slice();
+    for(const fx of fixes){
+      const esc=fx.from.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+      out[fx.i]=out[fx.i].replace(new RegExp('(^\\s*)'+esc+'\\b'), '$1'+fx.to);
+    }
+    fixed=out.join('\n');
+  }
+  issues.sort((a,b)=>a.line-b.line);
+  return {issues, fixed, fixCount:fixes.length};
+}
+
+const docInput=document.getElementById('doc-input');
+const docResults=document.getElementById('doc-results');
+const docCount=document.getElementById('doc-count');
+const docFixedPanel=document.getElementById('doc-fixed-panel');
+const docFixed=document.getElementById('doc-fixed');
+let docFixedText='';
+
+function runDoctor(){
+  const r=lintScript(docInput.value);
+  const errs=r.issues.filter(x=>x.sev==='err').length;
+  const warns=r.issues.filter(x=>x.sev==='warn').length;
+  const infos=r.issues.filter(x=>x.sev==='info').length;
+  docCount.textContent=`${errs} error${errs!==1?'s':''}, ${warns} warning${warns!==1?'s':''}${infos?`, ${infos} note${infos!==1?'s':''}`:''}`;
+  if(!r.issues.length){
+    docResults.innerHTML=`<div class="doc-clean">No problems found. Every command here is recognized and the polycurves are balanced.</div>`;
+  } else {
+    docResults.innerHTML=r.issues.map(it=>`
+      <div class="finding ${it.sev}">
+        <div class="fh"><span class="sev">${it.sev==='err'?'error':it.sev==='warn'?'warning':'note'}</span><span class="ln">line ${it.line}</span></div>
+        <div class="msg">${escapeHtml(it.msg)}</div>
+        ${it.sug?`<div class="sug">${escapeHtml(it.sug)}</div>`:''}
+      </div>`).join('');
+  }
+  docFixedText=r.fixed||'';
+  if(r.fixCount){ docFixed.textContent=r.fixed; docFixedPanel.style.display='block'; }
+  else docFixedPanel.style.display='none';
+}
+document.getElementById('doc-check').onclick=runDoctor;
+document.getElementById('doc-fix').onclick=()=>{
+  const r=lintScript(docInput.value);
+  if(r.fixCount){ docInput.value=r.fixed; runDoctor(); toast(`Applied ${r.fixCount} safe fix${r.fixCount!==1?'es':''}`); }
+  else { runDoctor(); toast('No auto-fixable issues'); }
+};
+document.getElementById('doc-copy').onclick=()=>copy(docFixedText||docInput.value);
+document.getElementById('doc-download').onclick=()=>download('corrected.txt',docFixedText||docInput.value);
+document.getElementById('doc-toplay').onclick=()=>loadIntoPlayground(docFixedText||docInput.value);
+document.getElementById('doc-sample').onclick=()=>{
+  docInput.value=`Home Circular Construct Multiple layers
+set fly on 15.0 0
+select 4
+beginpolycurve 1 0.6 0.0 0
+-0.5 0.0 180 0.0 0.0
+0.5 0.0 180 0.0 0.0
+endpolycurve
+set fly on 25.0 0
+selct 2
+beginpolycurve 1 1.30 0.0 0
+-5 0 180 0.0 0.0
+5 0 180 0.0 0.0
+endpolycurves`;
+  runDoctor();
+};
 
 /* ============================================================
    INIT
