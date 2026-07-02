@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jetlab4 Script Studio</title>
+<title>Droplet Printer Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -172,8 +172,8 @@
     <div class="brand">
       <div class="logo-dot" aria-hidden="true"></div>
       <div>
-        <h1>Jetlab4 Script Studio</h1>
-        <div class="sub">Learn the language &middot; preview the print &middot; generate your own</div>
+        <h1>Droplet Printer Studio</h1>
+        <div class="sub"><a href="https://o23r.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">by o23r</a></div>
       </div>
     </div>
     <nav class="tabs" role="tablist" aria-label="Sections">
@@ -265,6 +265,17 @@
 
     <div class="gen-grid">
       <div>
+        <div class="panel" style="margin-bottom:18px">
+          <div class="panel-head"><h4>Print start position</h4></div>
+          <div class="panel-body">
+            <div class="field row2">
+              <div class="sub"><label>Start X (mm)</label><input type="number" id="st-x" value="0" step="0.5"></div>
+              <div class="sub"><label>Start Y (mm)</label><input type="number" id="st-y" value="0" step="0.5"></div>
+            </div>
+            <div class="field"><label>Rotation (deg)</label><input type="number" id="st-ang" value="0" step="1"></div>
+            <p class="hint" style="margin:0">Every pattern below is placed here with a reference frame, so you can print anywhere on the bed at any angle. Rebuild after changing this.</p>
+          </div>
+        </div>
         <!-- LOGO -->
         <div class="gen-genonly active" data-genpanel="logo">
           <div class="panel"><div class="panel-head"><h4>Image &rarr; script</h4></div>
@@ -290,7 +301,6 @@
         <!-- ARRAY -->
         <div class="gen-genonly" data-genpanel="array">
           <div class="panel"><div class="panel-head"><h4>Filled array</h4></div><div class="panel-body">
-            <div class="field row2"><div class="sub"><label>Start X (mm)</label><input type="number" id="ar-x" value="0" step="0.5"></div><div class="sub"><label>Start Y (mm)</label><input type="number" id="ar-y" value="0" step="0.5"></div></div>
             <div class="field row2"><div class="sub"><label>Pitch X (dx)</label><input type="number" id="ar-dx" value="0.2" step="0.01"></div><div class="sub"><label>Count X (nx)</label><input type="number" id="ar-nx" value="10" min="1"></div></div>
             <div class="field row2"><div class="sub"><label>Pitch Y (dy)</label><input type="number" id="ar-dy" value="0.2" step="0.01"></div><div class="sub"><label>Count Y (ny)</label><input type="number" id="ar-ny" value="10" min="1"></div></div>
             <div class="field row2"><div class="sub"><label>Angle (deg)</label><input type="number" id="ar-ang" value="0" step="1"></div><div class="sub"><label>Device</label><input type="number" id="ar-dev" value="1" min="1"></div></div>
@@ -302,7 +312,6 @@
         <!-- BORDER -->
         <div class="gen-genonly" data-genpanel="border">
           <div class="panel"><div class="panel-head"><h4>Rectangle border</h4></div><div class="panel-body">
-            <div class="field row2"><div class="sub"><label>Start X (mm)</label><input type="number" id="bd-x" value="0" step="0.5"></div><div class="sub"><label>Start Y (mm)</label><input type="number" id="bd-y" value="0" step="0.5"></div></div>
             <div class="field row2"><div class="sub"><label>Pitch X (dx)</label><input type="number" id="bd-dx" value="0.2" step="0.01"></div><div class="sub"><label>Count X (nx)</label><input type="number" id="bd-nx" value="30" min="2"></div></div>
             <div class="field row2"><div class="sub"><label>Pitch Y (dy)</label><input type="number" id="bd-dy" value="0.2" step="0.01"></div><div class="sub"><label>Count Y (ny)</label><input type="number" id="bd-ny" value="20" min="2"></div></div>
             <div class="field row2"><div class="sub"><label>Angle (deg)</label><input type="number" id="bd-ang" value="0" step="1"></div><div class="sub"><label>Double border</label><select id="bd-double"><option value="no">single</option><option value="yes">double (nested)</option></select></div></div>
@@ -314,8 +323,7 @@
         <!-- POINTS -->
         <div class="gen-genonly" data-genpanel="points">
           <div class="panel"><div class="panel-head"><h4>Dose-gradient point grid</h4></div><div class="panel-body">
-            <p class="hint" style="margin-top:0">Makes a <span class="kbd">begin/end</span> point list. Drop count sweeps from min to max across the rows, handy for dose or calibration studies.</p>
-            <div class="field row2"><div class="sub"><label>Start X (mm)</label><input type="number" id="pt-x" value="0" step="0.5"></div><div class="sub"><label>Start Y (mm)</label><input type="number" id="pt-y" value="0" step="0.5"></div></div>
+            <p class="hint" style="margin-top:0">Makes a <span class="kbd">begin/end</span> point list placed at the start position. Drop count sweeps from min to max across the rows, handy for dose or calibration studies.</p>
             <div class="field row2"><div class="sub"><label>Pitch X</label><input type="number" id="pt-dx" value="0.5" step="0.05"></div><div class="sub"><label>Cols</label><input type="number" id="pt-nx" value="5" min="1"></div></div>
             <div class="field row2"><div class="sub"><label>Pitch Y</label><input type="number" id="pt-dy" value="0.5" step="0.05"></div><div class="sub"><label>Rows</label><input type="number" id="pt-ny" value="5" min="1"></div></div>
             <div class="field row2"><div class="sub"><label>Min drops</label><input type="number" id="pt-min" value="1" min="1"></div><div class="sub"><label>Max drops</label><input type="number" id="pt-max" value="10" min="1"></div></div>
@@ -328,7 +336,7 @@
         <div class="gen-genonly" data-genpanel="circle">
           <div class="panel"><div class="panel-head"><h4>Circle &amp; arch (polycurve)</h4></div><div class="panel-body">
             <div class="field"><label>Shape</label><select id="cr-shape"><option value="circle">circle (two half arcs)</option><option value="arch">arch (open, straight sides + top arc)</option></select></div>
-            <div class="field row2"><div class="sub"><label>Center X</label><input type="number" id="cr-cx" value="0" step="0.5"></div><div class="sub"><label>Center Y</label><input type="number" id="cr-cy" value="0" step="0.5"></div></div>
+            <div class="field row2"><div class="sub"><label>Center X (rel.)</label><input type="number" id="cr-cx" value="0" step="0.5"></div><div class="sub"><label>Center Y (rel.)</label><input type="number" id="cr-cy" value="0" step="0.5"></div></div>
             <div class="field row2"><div class="sub"><label>Radius / half-width</label><input type="number" id="cr-r" value="2.5" step="0.5"></div><div class="sub"><label>Side height (arch)</label><input type="number" id="cr-h" value="10" step="0.5"></div></div>
             <div class="field row2"><div class="sub"><label>Fill</label><select id="cr-fill"><option value="1">filled</option><option value="0">outline</option></select></div><div class="sub"><label>Raster step</label><input type="number" id="cr-step" value="0.25" step="0.05"></div></div>
             <div class="field"><label>Fly speed (mm/s)</label><input type="number" id="cr-speed" value="50" step="1"></div>
@@ -583,17 +591,17 @@ function interpret(text){
           // set reference <ox> <oy> <ang> [dx dy dth]
           const a=tk[2],b=tk[3],c=tk[4];
           const star=v=>v==='*';
-          if(!star(a)) ref.ox = a.toLowerCase()==='current'? toWorld(pen.x,pen.y).x : num(a);
-          if(!star(b)) ref.oy = b.toLowerCase()==='current'? toWorld(pen.x,pen.y).y : num(b);
-          if(a && a.toLowerCase()==='current' && b && b.toLowerCase()==='current'){
-            const w=toWorld(pen.x,pen.y); ref.ox=w.x; ref.oy=w.y;
-          }
-          if(c && !star(c) && c.toLowerCase()!=='current' && !isNaN(num(c))) ref.th=rad(num(c));
-          if(tk[5]!==undefined){ // incremental move dx dy dth in current frame
+          const cur=v=>v&&v.toLowerCase()==='current';
+          const pw0=toWorld(pen.x,pen.y);           // snapshot BEFORE mutating ref
+          let ox=ref.ox, oy=ref.oy, th=ref.th;
+          if(!star(a)) ox = cur(a)? pw0.x : num(a);
+          if(!star(b)) oy = cur(b)? pw0.y : num(b);
+          if(c && !star(c) && !cur(c) && !isNaN(num(c))) th = rad(num(c));
+          if(tk[5]!==undefined){                    // incremental move dx dy dth in the (new) frame
             const dx=num(tk[5])||0, dy=num(tk[6])||0, dth=num(tk[7])||0;
-            const d=rot(dx,dy,ref.th); ref.ox+=d.x; ref.oy+=d.y; ref.th+=rad(dth);
+            const d=rot(dx,dy,th); ox+=d.x; oy+=d.y; th+=rad(dth);
           }
-          pen={x:0,y:0};
+          ref={ox,oy,th}; pen={x:0,y:0};
         }
         // set frequency / strobedelay / etc -> no geometry
         break;
@@ -974,70 +982,80 @@ document.querySelectorAll('.gen-tab').forEach(t=>t.onclick=()=>{
   document.querySelectorAll('[data-genpanel]').forEach(p=>p.classList.toggle('active',p.dataset.genpanel===t.dataset.gen));
 });
 
+// Wrap a pattern (authored from the origin) so it prints at the chosen start
+// position and angle, using a reference frame. Restores the global frame after.
+function startWrap(desc, fly, body){
+  const g=id=>document.getElementById(id);
+  const x=(+g('st-x').value)||0, y=(+g('st-y').value)||0, a=(+g('st-ang').value)||0;
+  let s=desc+'\n';
+  if(fly) s+=fly+'\n';
+  s+=`moveto ${x.toFixed(3)} ${y.toFixed(3)}\n`;
+  s+=`set reference current current *\n`;
+  if(a!==0) s+=`set reference * * * 0.0 0.0 ${a.toFixed(1)}\n`;
+  s+=body.replace(/\s+$/,'')+'\n';
+  s+=`restoreglobalreference`;
+  return s;
+}
+
 // ARRAY
 document.getElementById('ar-build').onclick=()=>{
   const g=id=>document.getElementById(id);
   const fly=g('ar-fly').value==='on'?`set fly on ${(+g('ar-speed').value).toFixed(1)} 0`:'set fly off';
-  const s=`Filled array generated in Jetlab4 Script Studio.
-${fly}
-moveto ${(+g('ar-x').value).toFixed(3)} ${(+g('ar-y').value).toFixed(3)}
+  const body=`moveto 0.000 0.000
 array ${(+g('ar-dx').value)} ${Math.round(+g('ar-nx').value)} ${(+g('ar-dy').value)} ${Math.round(+g('ar-ny').value)} ${(+g('ar-ang').value).toFixed(1)} ${Math.round(+g('ar-dev').value)}`;
-  setGen(s);
+  setGen(startWrap('Filled array generated in Droplet Printer Studio.',fly,body));
 };
 // BORDER
 document.getElementById('bd-build').onclick=()=>{
   const g=id=>document.getElementById(id);
   const fly=g('bd-fly').value==='on'?`set fly on ${(+g('bd-speed').value).toFixed(1)} 0`:'set fly off';
   const dx=+g('bd-dx').value, dy=+g('bd-dy').value, nx=Math.round(+g('bd-nx').value), ny=Math.round(+g('bd-ny').value), ang=(+g('bd-ang').value).toFixed(1);
-  let body=`moveto ${(+g('bd-x').value).toFixed(3)} ${(+g('bd-y').value).toFixed(3)}
+  let body=`moveto 0.000 0.000
 border ${dx} ${nx} ${dy} ${ny} ${ang}`;
   if(g('bd-double').value==='yes' && nx>2 && ny>2){
     body+=`\nmoveby ${dx.toFixed(3)} ${dy.toFixed(3)}\nborder ${dx} ${nx-2} ${dy} ${ny-2} ${ang}`;
   }
-  setGen(`Rectangle border generated in Jetlab4 Script Studio.\n${fly}\n${body}`);
+  setGen(startWrap('Rectangle border generated in Droplet Printer Studio.',fly,body));
 };
 // POINTS
 document.getElementById('pt-build').onclick=()=>{
   const g=id=>document.getElementById(id);
-  const x0=+g('pt-x').value, y0=+g('pt-y').value, dx=+g('pt-dx').value, dy=+g('pt-dy').value;
+  const dx=+g('pt-dx').value, dy=+g('pt-dy').value;
   const nx=Math.round(+g('pt-nx').value), ny=Math.round(+g('pt-ny').value);
   const dmin=Math.round(+g('pt-min').value), dmax=Math.round(+g('pt-max').value), dev=Math.round(+g('pt-dev').value);
   const total=nx*ny; let rows='';
-  let k=0;
   for(let iy=0;iy<ny;iy++){
     const drops=ny>1?Math.round(dmin+(dmax-dmin)*iy/(ny-1)):dmin;
     for(let ix=0;ix<nx;ix++){
-      rows+=`${(x0+ix*dx).toFixed(3)} ${(y0+iy*dy).toFixed(3)} ${dev} ${drops}\n`; k++;
+      rows+=`${(ix*dx).toFixed(3)} ${(iy*dy).toFixed(3)} ${dev} ${drops}\n`;
     }
   }
-  setGen(`Dose-gradient point grid generated in Jetlab4 Script Studio.\n; x y device drops  (${total} points)\nbegin\n${rows}end`);
+  const body=`; x y device drops  (${total} points)\nbegin\n${rows}end`;
+  setGen(startWrap('Dose-gradient point grid generated in Droplet Printer Studio.','',body));
 };
 // CIRCLE / ARCH
 document.getElementById('cr-build').onclick=()=>{
   const g=id=>document.getElementById(id);
   const shape=g('cr-shape').value, cx=+g('cr-cx').value, cy=+g('cr-cy').value, r=+g('cr-r').value, hgt=+g('cr-h').value;
-  const fill=g('cr-fill').value, step=+g('cr-step').value, speed=(+g('cr-speed').value).toFixed(1);
-  let s;
+  const fill=g('cr-fill').value, step=+g('cr-step').value, fly=`set fly on ${(+g('cr-speed').value).toFixed(1)}`;
+  let desc, body;
   if(shape==='circle'){
-    s=`Circle generated in Jetlab4 Script Studio.
-set fly on ${speed}
-beginpolycurve ${fill} ${step} 0.0 0
+    desc='Circle generated in Droplet Printer Studio.';
+    body=`beginpolycurve ${fill} ${step} 0.0 0
 ${(cx+r).toFixed(3)} ${cy.toFixed(3)}
 ${(cx-r).toFixed(3)} ${cy.toFixed(3)} 180 ${cx.toFixed(3)} ${cy.toFixed(3)}
 ${(cx+r).toFixed(3)} ${cy.toFixed(3)} 180 ${cx.toFixed(3)} ${cy.toFixed(3)}
 endpolycurve`;
   } else {
-    // arch: up the right side, half circle over the top, down and across baseline
     const x0=cx+r, x1=cx-r, yb=cy, yt=cy+hgt;
-    s=`Arch generated in Jetlab4 Script Studio.
-set fly on ${speed}
-beginpolycurve ${fill} ${step} 0.0 0.05 0 0
+    desc='Arch generated in Droplet Printer Studio.';
+    body=`beginpolycurve ${fill} ${step} 0.0 0.05 0 0
 ${x0.toFixed(3)} ${yb.toFixed(3)}
 ${x0.toFixed(3)} ${yt.toFixed(3)} 180 ${cx.toFixed(3)} ${yt.toFixed(3)}
 ${x1.toFixed(3)} ${yb.toFixed(3)}
 endpolycurve`;
   }
-  setGen(s);
+  setGen(startWrap(desc,fly,body));
 };
 
 // LOGO / IMAGE
@@ -1086,31 +1104,24 @@ document.getElementById('lg-build').onclick=()=>{
     if(ink) on.push([cxp,ry]);
   }
   const speed=(+g('lg-speed').value).toFixed(1);
+  const fly=`set fly on ${speed} 0`;
   if(g('lg-mode').value==='bitmap'){
-    const s=`Logo print script generated in Jetlab4 Script Studio.
-set fly on ${speed} 0
-moveto 0.0 0.0
-bitmap ${pitch} ${pitch} 0.0   1   1   "${g('lg-bmp').value}"
+    const body=`bitmap ${pitch} ${pitch} 0.0   1   1   "${g('lg-bmp').value}"
 ; ${on.length} ink pixels at ${cols}\u00d7${rows}, pitch ${pitch} mm  ->  ${(cols*pitch).toFixed(2)}\u00d7${(rows*pitch).toFixed(2)} mm`;
-    setGen(s);
+    setGen(startWrap('Logo print script generated in Droplet Printer Studio.',fly,body));
     return;
   }
   // point list: flip Y so image is upright on the bed
-  let body='';
+  let rows_txt='';
   for(const [px,py] of on){
     const X=(px*pitch).toFixed(3);
     const Y=((rows-1-py)*pitch).toFixed(3);
-    body+=`${X} ${Y} 1 1\n`;
+    rows_txt+=`${X} ${Y} 1 1\n`;
   }
   const size=`${(cols*pitch).toFixed(2)}\u00d7${(rows*pitch).toFixed(2)} mm`;
-  const s=`Logo as point list, generated in Jetlab4 Script Studio.
-; ${on.length} drops, ${cols}\u00d7${rows} grid, pitch ${pitch} mm, size ${size}
-set fly on ${speed} 0
-moveto 0.0 0.0
-begin
-${body}end`;
+  const body=`; ${on.length} drops, ${cols}\u00d7${rows} grid, pitch ${pitch} mm, size ${size}\nbegin\n${rows_txt}end`;
   if(on.length>6000) toast(`${on.length} points: consider a coarser resolution`);
-  setGen(s);
+  setGen(startWrap('Logo as point list, generated in Droplet Printer Studio.',fly,body));
 };
 
 /* ============================================================
